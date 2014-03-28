@@ -36,6 +36,10 @@ int yAverage=0;
 int zAverage=0;
 int time = 0;
 
+int lastXval;
+int lastYval;
+int lastZval;
+
 void setup(){
     Serial.begin(9600);
     xl.begin();                   // Setup SPI protocol, issue device soft reset
@@ -68,6 +72,11 @@ void setup(){
 
 void loop(){
     time++;
+    int xDiff;
+    int yDiff;
+    int zDiff;
+
+    
     // read all three axis in burst to ensure all measurements correspond to same sample time
     for (int counter=0; counter < 3; counter++)
     {
@@ -79,10 +88,6 @@ void loop(){
       yAverageRaw = yAverageRaw+yValue;
       zAverageRaw = zAverageRaw+zValue;
       
-//      Serial.print("x ");
-//      Serial.print(xValue);
-//      Serial.print("\t");
-//      Serial.print("\n");
       delay(100);                // Arbitrary delay to make serial monitor easier to observe
     }
     xAverage=xAverageRaw/3;
@@ -91,16 +96,29 @@ void loop(){
     xAverageRaw=0;
     yAverageRaw=0;
     zAverageRaw=0;
-    Serial.print (time);
-    
-    Serial.print (",");
-    Serial.print (xAverage -  xOffset);
-    Serial.print (",");
-    
-    Serial.print (yAverage - yOffset);
-    Serial.print (",");
 
-    Serial.print(zAverage - zOffset);
+    int currentX = xAverage -  xOffset;
+    int currentY = yAverage - yOffset;
+    int currentZ = zAverage - zOffset;
+
+    int xDiff = currentX - lastXval;
+    int yDiff = currentY - lastYval;
+    int zDiff = currentZ - lastZval;
+
+    Serial.print (time);
+    Serial.print (",");
+    Serial.print (xDiff);
+    Serial.print (",");
+    Serial.print (yDiff);
+    Serial.print (",");
+    Serial.print(zDiff);
     Serial.print ("\n");
+
+
+    // Now that we've printed the differentials,
+    // move our current Values into lastVals
+    lastXval = xDiff;
+    lastYval = yDiff;
+    lastZval = zDiff;
 }
 
