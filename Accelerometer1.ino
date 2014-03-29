@@ -28,9 +28,6 @@ int temp;
 int xValue, yValue, zValue, Temperature;
 int xOffset, yOffset, zOffset;
 
-int xAverageRaw=0;
-int yAverageRaw=0;
-int zAverageRaw=0;
 int xAverage=0;
 int yAverage=0;
 int zAverage=0;
@@ -72,10 +69,10 @@ void setup(){
 
 void loop(){
     time++;
-    int xDiff;
-    int yDiff;
-    int zDiff;
 
+    int xAverageRaw=0;
+    int yAverageRaw=0;
+    int zAverageRaw=0;
     
     // read all three axis in burst to ensure all measurements correspond to same sample time
     for (int counter=0; counter < 3; counter++)
@@ -93,9 +90,6 @@ void loop(){
     xAverage=xAverageRaw/3;
     yAverage=yAverageRaw/3;
     zAverage=zAverageRaw/3;
-    xAverageRaw=0;
-    yAverageRaw=0;
-    zAverageRaw=0;
 
     int currentX = xAverage -  xOffset;
     int currentY = yAverage - yOffset;
