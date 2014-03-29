@@ -24,14 +24,11 @@ SCLK, MISO, MOSI, and DP 10 of Arduino
 
 ADXL362 xl;
 
-int temp;
-int xValue, yValue, zValue, Temperature;
+int Temperature;
 int xOffset, yOffset, zOffset;
 
-int xAverage=0;
-int yAverage=0;
-int zAverage=0;
-int time = 0;
+
+double time = 0;
 
 int lastXval;
 int lastYval;
@@ -74,31 +71,33 @@ void loop(){
     int yAverageRaw=0;
     int zAverageRaw=0;
     
-    // read all three axis in burst to ensure all measurements correspond to same sample time
+    // read in elements 3 times, sum together reads to prepare for average
     for (int counter=0; counter < 3; counter++)
     {
      // xl.readXYZTData(xValue, yValue, zValue, Temperature);
-      xValue= xl.readXData();
-      yValue= xl.readYData();
-      zValue= xl.readZData();
-      xAverageRaw = xAverageRaw+xValue;
-      yAverageRaw = yAverageRaw+yValue;
-      zAverageRaw = zAverageRaw+zValue;
+      xAverageRaw += xl.readXData();
+      yAverageRaw += xl.readYData();
+      zAverageRaw += xl.readZData();
       
       delay(100);                // Arbitrary delay to make serial monitor easier to observe
     }
-    xAverage=xAverageRaw/3;
-    yAverage=yAverageRaw/3;
-    zAverage=zAverageRaw/3;
+    
+    // finish averages
+    int xAverage = xAverageRaw / 3;
+    int yAverage = yAverageRaw / 3;
+    int zAverage = zAverageRaw / 3;
 
+    // apply calibration offset
     int currentX = xAverage -  xOffset;
     int currentY = yAverage - yOffset;
     int currentZ = zAverage - zOffset;
 
+    // calculate diff
     int xDiff = currentX - lastXval;
     int yDiff = currentY - lastYval;
     int zDiff = currentZ - lastZval;
-
+    
+    // output data over serial
     Serial.print (time);
     Serial.print (",");
     Serial.print (xDiff);
@@ -107,10 +106,9 @@ void loop(){
     Serial.print (",");
     Serial.print(zDiff);
     Serial.print ("\n");
-
-
+    
     // Now that we've printed the differentials,
-    // move our current Values into lastVals
+    // move our current Values into lastVals for the next iteration
     lastXval = xDiff;
     lastYval = yDiff;
     lastZval = zDiff;
