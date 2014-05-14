@@ -101,9 +101,10 @@ void loop(){
     int currentY = yAverage - yOffset;
     int currentZ = zAverage - zOffset;
 
-    int xDiff = currentX - lastXval;
-    int yDiff = currentY - lastYval;
-    int zDiff = currentZ - lastZval;
+    xDiff = currentX - lastXval;
+    yDiff = currentY - lastYval;
+    zDiff = currentZ - lastZval;
+    int actualMovement = (xDiff+yDiff+zDiff)/3;
 
     Serial.print (time);
     Serial.print (",");
@@ -112,13 +113,16 @@ void loop(){
     Serial.print (yDiff);
     Serial.print (",");
     Serial.print(zDiff);
+    Serial.print (",");
+    Serial.print(actualMovement);
     Serial.print ("\n");
+    
 
 
     // Now that we've printed the differentials,
     // move our current Values into lastVals
-    lastXval = xDiff;
-    lastYval = yDiff;
-    lastZval = zDiff;
+    lastXval = currentX;
+    lastYval = currentY;
+    lastZval = currentZ;
 }
 
